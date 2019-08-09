@@ -265,7 +265,7 @@ for idx, download in enumerate(downloads):
 	# download subtitle
 	downloaded_subtitle = opensubtitles('download', [download_url])
 
-	with open(destinations / subtitle_file, 'wb') as f:
+	with open(destination / subtitle_file, 'wb') as f:
 		f.write(gzip.GzipFile(fileobj=io.BytesIO(downloaded_subtitle.read())).read())
 		f.close()
 
