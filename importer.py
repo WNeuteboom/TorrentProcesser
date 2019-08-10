@@ -20,6 +20,7 @@ from operator import itemgetter
 from dotenv import load_dotenv
 load_dotenv()
 
+debug = False
 tags = ['NF', 'DUBBED', '2160p', 'PAL', 'REQ', '18+', 'DVDR', 
 		'HEVC', 'NTSC', '480p', '720p', '1080p', 'x264', 'DUAL', 
 		'x265', 'BluRay', 'HDTV', 'CAM', 'MP4', 'AAC', 'XviD', 'HDrip', 
@@ -37,6 +38,7 @@ destinations = {
 }
 cleansed = []
 unpacked = False
+filesize = -1
 
 data_folder = Path(destinations['movie'])
 
@@ -72,6 +74,8 @@ def opensubtitles(action, params = []):
 	}
 
 	response = requests.get(switcher.get(action)['url'], headers=headers, auth=(os_username, os_password), stream=switcher.get(action)['stream'])
+
+	print("Opensubtitles call {:s}".format(action))
 
 	return response.json() if (switcher.get(action)['json']) else response.raw
 
@@ -150,6 +154,7 @@ def unpack_torrent():
 
 def move_torrent():
 	# print(download)
+	global filesize
 
 	for videofile in download.glob('*.mkv'):
 		outfile = Path(destination / cleansed['filename']).with_suffix(".mkv")
@@ -160,6 +165,8 @@ def move_torrent():
 
 		shutil.copyfile(videofile, outfile)
 		print("Copying {} to {}".format(videofile, outfile))
+
+		filesize = outfile.stat().st_size
 
 		if unpacked:
 			print("Deleted extracted file")
@@ -184,7 +191,8 @@ def select_subtitles():
 			continue
 
         # Check for 100% match on tags
-		if (based_on_torrent['tags']==cleansed['tags']):
+		if (subtitle['MovieByteSize'] == filesize or based_on_torrent['tags']==cleansed['tags']):
+			print('Got 100% match, always download')
 			download.append({
 				'count': 100,
 				'subtitle': subtitle
