@@ -95,7 +95,7 @@ def clean_title(title):
 			title_tags.append(tag.strip())
 			title = re.sub(reg, r'', title, flags=re.I)
 
-	pos = title.find('-')
+	pos = title.rfind('-')
 
 	if pos >= 0:
 		title = title[0:pos]
