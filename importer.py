@@ -100,19 +100,19 @@ def clean_title(title):
 	if pos >= 0:
 		title = title[0:pos]
 
-	# Parse episode
-	matches = re.findall(r'\b(S\d{2}E\d{2,3}|S\d{2})\b', title, re.IGNORECASE)
-
-	if len(matches):
-		episode = matches[0].strip()
-		title = title.replace(episode, '').strip()
-
 	# Parse year
 	matches = re.findall(r'\b(\(?\d{4}\)?)+', title, re.IGNORECASE)
 
 	if len(matches):
 		year = matches[0].strip()
 		title = title.replace(year, '').strip()
+
+	# Parse episode
+	matches = re.findall(r'\b(S\d{2}E\d{2,3}|S\d{2})\b', title, re.IGNORECASE)
+
+	if len(matches):
+		episode = matches[0].strip()
+		title = title.split(episode)[0].strip()
 
 	# what does this do
 	title = re.sub(r'(?<=(?<!\\pL)\\pL) (?=\\pL(?!\\pL))', r'', title)
